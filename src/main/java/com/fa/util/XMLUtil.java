@@ -65,12 +65,25 @@ public class XMLUtil {
 
     public static Element[] getElements(NodeList nodeList) {
         List<Element> elements = new ArrayList<>();
-        for(int i = 0; i < nodeList.getLength(); ++i) {
+        for(int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if(node instanceof Element) {
                 elements.add((Element) node);
             }
         }
+
+        return elements.toArray(new Element[0]);
+    }
+
+    public static Element[] getElementsInReverse(NodeList nodeList) {
+        List<Element> elements = new ArrayList<>();
+        for(int i = nodeList.getLength() - 1; i >= 0; i--) {
+            Node node = nodeList.item(i);
+            if(node instanceof Element) {
+                elements.add((Element) node);
+            }
+        }
+
         return elements.toArray(new Element[0]);
     }
 
@@ -88,4 +101,5 @@ public class XMLUtil {
     public static Element getRootElement(Document document) {
         return document.getDocumentElement();
     }
+
 }

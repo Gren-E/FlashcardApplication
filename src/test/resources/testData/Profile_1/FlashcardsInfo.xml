@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flashcards>
+    <flashcard category_name="AnotherCategory" file_ordinal="1" id="0" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="1" id="1" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="2" id="2" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="3" id="3" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="4" id="4" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="5" id="5" source_file="PDFTestReader1.pdf"/>
+    <flashcard category_name="AnotherCategory" file_ordinal="6" id="6" source_file="PDFTestReader1.pdf"/>
+</flashcards>

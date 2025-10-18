@@ -1,11 +1,16 @@
 package com.fa.data.fc;
 
+import com.fa.data.AppMode;
+import com.fa.data.DailyActivity;
+import com.fa.io.DataManager;
+import com.fa.io.XMLWriter;
+
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Flashcard {
-
+    
     private int id;
     private int fileOrdinal;
 
@@ -79,8 +84,19 @@ public class Flashcard {
         return flashcardStats.getSuccessRatio();
     }
 
-    public void answer(boolean isCorrect) {
-        flashcardStats.answer(isCorrect);
+    public void answer(boolean isCorrect, AppMode source) {
+        if (wasAnsweredToday()) {
+            return;
+        }
+        flashcardStats.updateStats(isCorrect);
+        DailyActivity activity = DataManager.getDailyActivity(flashcardStats.getLastAnsweredDate());
+        activity.updateStats(isCorrect);
+        if (source == AppMode.REVISION) {
+            activity.updateBoxStats(isCorrect);
+        }
+
+        XMLWriter.updateFlashcardStats(this, DataManager.getCurrentProfile());
+        XMLWriter.updateDailyActivity(activity, DataManager.getCurrentProfile());
     }
 
     public boolean wasAnsweredToday() {
@@ -92,6 +108,7 @@ public class Flashcard {
         if (!(other instanceof Flashcard flashcard)) {
             return false;
         }
+
         return id == flashcard.id && fileOrdinal == flashcard.fileOrdinal && Objects.equals(categoryName, flashcard.categoryName) && Objects.equals(sourceFile, flashcard.sourceFile);
     }
 
@@ -102,12 +119,8 @@ public class Flashcard {
 
     @Override
     public String toString() {
-        return "Flashcard{" +
-                "id=" + id +
-                ", fileOrdinal=" + fileOrdinal +
-                ", categoryName='" + categoryName + '\'' +
-                ", sourceFile=" + sourceFile +
-                '}';
+        return String.format("Flashcard{id=%d, fileOrdinal=%d, categoryName='%s', sourceFile='%s'}",
+                id, fileOrdinal, categoryName, sourceFile);
     }
 
 }

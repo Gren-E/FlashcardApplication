@@ -3,15 +3,9 @@ package com.fa.io;
 import com.fa.data.fc.Flashcard;
 import com.fa.util.PDFUtil;
 import org.apache.log4j.Logger;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.Image;
 import java.io.File;
-import java.io.IOException;
-
 
 public class PDFReader {
 
@@ -44,4 +38,5 @@ public class PDFReader {
     public static Image loadReverse(Flashcard flashcard) {
         return PDFUtil.loadImage(flashcard.getSourceFile(),flashcard.getFileOrdinal(),false);
     }
+
 }

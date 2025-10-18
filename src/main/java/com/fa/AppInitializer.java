@@ -15,4 +15,5 @@ public class AppInitializer {
             AppWindow window = new AppWindow();
         });
     }
+
 }

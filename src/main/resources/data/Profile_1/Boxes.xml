@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<boxes>
+    <box duration="0" id="0">
+        <flashcard id="9"/>
+        <flashcard id="10"/>
+        <flashcard id="11"/>
+        <flashcard id="12"/>
+        <flashcard id="13"/>
+        <flashcard id="14"/>
+        <flashcard id="15"/>
+        <flashcard id="16"/>
+        <flashcard id="17"/>
+        <flashcard id="18"/>
+        <flashcard id="19"/>
+        <flashcard id="20"/>
+        <flashcard id="21"/>
+        <flashcard id="22"/>
+        <flashcard id="23"/>
+        <flashcard id="24"/>
+        <flashcard id="25"/>
+        <flashcard id="26"/>
+        <flashcard id="27"/>
+        <flashcard id="28"/>
+        <flashcard id="29"/>
+        <flashcard id="30"/>
+        <flashcard id="31"/>
+        <flashcard id="32"/>
+        <flashcard id="33"/>
+        <flashcard id="34"/>
+        <flashcard id="35"/>
+        <flashcard id="36"/>
+        <flashcard id="37"/>
+        <flashcard id="38"/>
+        <flashcard id="39"/>
+        <flashcard id="40"/>
+        <flashcard id="41"/>
+        <flashcard id="42"/>
+        <flashcard id="43"/>
+        <flashcard id="44"/>
+        <flashcard id="45"/>
+        <flashcard id="46"/>
+        <flashcard id="47"/>
+        <flashcard id="48"/>
+        <flashcard id="49"/>
+        <flashcard id="50"/>
+        <flashcard id="51"/>
+        <flashcard id="52"/>
+        <flashcard id="53"/>
+        <flashcard id="54"/>
+        <flashcard id="55"/>
+        <flashcard id="56"/>
+        <flashcard id="57"/>
+        <flashcard id="58"/>
+        <flashcard id="59"/>
+        <flashcard id="60"/>
+        <flashcard id="61"/>
+        <flashcard id="62"/>
+        <flashcard id="63"/>
+        <flashcard id="64"/>
+        <flashcard id="65"/>
+        <flashcard id="66"/>
+        <flashcard id="67"/>
+        <flashcard id="68"/>
+        <flashcard id="69"/>
+        <flashcard id="70"/>
+        <flashcard id="71"/>
+        <flashcard id="72"/>
+        <flashcard id="73"/>
+        <flashcard id="74"/>
+        <flashcard id="75"/>
+        <flashcard id="76"/>
+        <flashcard id="77"/>
+        <flashcard id="78"/>
+        <flashcard id="79"/>
+        <flashcard id="80"/>
+        <flashcard id="81"/>
+        <flashcard id="82"/>
+        <flashcard id="83"/>
+        <flashcard id="84"/>
+        <flashcard id="85"/>
+        <flashcard id="86"/>
+        <flashcard id="87"/>
+        <flashcard id="88"/>
+        <flashcard id="89"/>
+        <flashcard id="90"/>
+        <flashcard id="91"/>
+        <flashcard id="92"/>
+        <flashcard id="93"/>
+        <flashcard id="94"/>
+        <flashcard id="95"/>
+        <flashcard id="96"/>
+        <flashcard id="97"/>
+        <flashcard id="98"/>
+        <flashcard id="99"/>
+        <flashcard id="100"/>
+        <flashcard id="101"/>
+        <flashcard id="102"/>
+        <flashcard id="103"/>
+        <flashcard id="104"/>
+    </box>
+    <box duration="1" id="1">
+        <flashcard id="7"/>
+        <flashcard id="8"/>
+    </box>
+    <box duration="3" id="2">
+        <flashcard id="1"/>
+        <flashcard id="2"/>
+        <flashcard id="3"/>
+        <flashcard id="4"/>
+        <flashcard id="5"/>
+        <flashcard id="6"/>
+    </box>
+    <box duration="7" id="3"/>
+    <box duration="14" id="4"/>
+    <box duration="0" id="5"/>
+</boxes>

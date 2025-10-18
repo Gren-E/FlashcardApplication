@@ -1,5 +1,6 @@
 package com.fa.io;
 
+import com.fa.AbstractTest;
 import com.fa.data.fc.Flashcard;
 import com.fa.util.PDFUtil;
 
@@ -11,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class PDFTest {
+public class PDFTest extends AbstractTest {
 
     @Test
     public void pdfReaderTest() throws IOException {
@@ -56,7 +57,7 @@ public class PDFTest {
     }
 
     private File getPDFSampleFile() throws IOException {
-        URL url = getClass().getResource("/testData/PDFTestReader.pdf");
+        URL url = getClass().getResource("/testData/Profile_1/PDFTestReader.pdf");
         if (url == null) {
             throw new IOException("Could not find PDF sample file.");
         }
