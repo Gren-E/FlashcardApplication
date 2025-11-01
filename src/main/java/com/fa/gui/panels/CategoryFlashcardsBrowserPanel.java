@@ -1,62 +1,73 @@
 package com.fa.gui.panels;
 
+import com.fa.data.AppMode;
 import com.fa.data.fc.Flashcard;
-import com.fa.io.XMLReader;
-import com.fa.io.XMLWriter;
+import com.fa.gui.AppColorPalette;
+import com.fa.gui.AppWindow;
+import com.fa.gui.ComponentFactory;
+import com.fa.io.DataManager;
 import com.fa.util.gui.GBC;
+import com.fa.util.gui.components.RectButton;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CategoryFlashcardsBrowserPanel extends JPanel {
+public class CategoryFlashcardsBrowserPanel extends LearningModesPanel {
 
-    private Flashcard[] flashcards;
+    private final JPanel flashcardsListPanel;
 
-    private FlashcardDisplayPanel flashcardDisplayPanel;
+    private final List<Flashcard> flashcards;
+    private final Map<Flashcard, RectButton> flashcardButtons;
 
-    private JPanel flashcardsListPanel;
+    public CategoryFlashcardsBrowserPanel(AppWindow parent) {
+        super(parent);
 
-    private JButton correctAnswerButton;
-    private JButton wrongAnswerButton;
+        flashcardsListPanel = new JPanel(new GridBagLayout());
+        flashcardsListPanel.setOpaque(false);
 
-    public CategoryFlashcardsBrowserPanel() {
-        setLayout(new GridBagLayout());
+        flashcards = new ArrayList<>();
+        flashcardButtons = new HashMap<>();
 
-        flashcardDisplayPanel = new FlashcardDisplayPanel();
+        JScrollPane buttonListScrollPane = ComponentFactory.createVerticalJScrollPane(flashcardsListPanel);
 
-        flashcardsListPanel = new JPanel();
-        flashcardsListPanel.setLayout(new GridBagLayout());
+        JPanel scrollPanePanel = ComponentFactory.createAccentRoundRecJPanel(new GridBagLayout());
+        scrollPanePanel.add(buttonListScrollPane, new GBC(0,0).setWeight(1,1).setFill(GBC.BOTH).setInsets(20, 50, 20, 50));
 
-        flashcards = XMLReader.loadFlashcards();
+        correctAnswerButton.setActionListener(event -> answer(true));
+        wrongAnswerButton.setActionListener(event -> answer(false));
 
-        JScrollPane buttonListScrollPane = new JScrollPane(flashcardsListPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        buttonListScrollPane.setOpaque(false);
-        buttonListScrollPane.getViewport().setOpaque(false);
+        add(exitBrowserButton,  new GBC(0, 0,2,1).setAnchor(GBC.EAST).setInsets(10));
+        add(scrollPanePanel, new GBC(0,1,1,2).setWeight(0,1).setFill(GBC.BOTH).setInsets(5,50,50,5).setIpad(250,0));
+        add(displayPanel, new GBC(1, 1).setWeight(0.8, 1).setFill(GBC.BOTH).setInsets(5,5,5,50));
+        add(buttonPanel, new GBC(1, 2).setWeight(0.8,0).setInsets(5,0,50,50));
+    }
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1,2));
-        correctAnswerButton = new JButton("Correct");
-        correctAnswerButton.addActionListener(event -> answer(true));
+    public void setCategory(String categoryName) {
+        flashcards.clear();
+        flashcardsListPanel.removeAll();
+        Flashcard[] categoryFlashcards = DataManager.getAllFlashcardsFromCategory(categoryName);
+        for (int i = 0; i < categoryFlashcards.length; i++) {
+            Flashcard flashcard = categoryFlashcards[i];
+            addFlashcardButton(flashcard, i);
+        }
+        flashcards.sort(Comparator.comparingInt(Flashcard::getFileOrdinal));
 
-        wrongAnswerButton = new JButton("Wrong");
-        wrongAnswerButton.addActionListener(event -> answer(false));
-
-        buttonPanel.add(correctAnswerButton);
-        buttonPanel.add(wrongAnswerButton);
-
-        add(buttonListScrollPane, new GBC(0,0,1,2).setWeight(0.2,1).setFill(GBC.BOTH));
-        add(flashcardDisplayPanel, new GBC(1,0).setWeight(0.8,1).setFill(GBC.BOTH));
-        add(buttonPanel, new GBC(1,1).setWeight(0.8, 0).setFill(GBC.HORIZONTAL));
+        setFlashcard(flashcards.get(0));
+        activeButton = flashcardButtons.get(flashcards.get(0));
     }
 
     private void answer(boolean isCorrect) {
         if (flashcardDisplayPanel.getFlashcard() == null) {
             return;
         }
-        flashcardDisplayPanel.getFlashcard().answer(isCorrect);
-        XMLWriter.updateStats(flashcardDisplayPanel.getFlashcard());
+        flashcardDisplayPanel.getFlashcard().answer(isCorrect, AppMode.CATEGORY_BROWSER);
+        activeButton.setBackground(isCorrect ? AppColorPalette.getButtonSuccessBackground() : AppColorPalette.getButtonFailBackground());
         setNextUnansweredFlashcard();
     }
 
@@ -70,22 +81,22 @@ public class CategoryFlashcardsBrowserPanel extends JPanel {
         setFlashcard(null);
     }
 
-    public void setCategory(String categoryName) {
-        int flashcardCount = 0;
-        for (Flashcard flashcard : flashcards) {
-            if (categoryName.equals(flashcard.getCategoryName())) {
-                JButton flashcardButton = new JButton(flashcard.getCategoryName() + ": " + flashcard.getFileOrdinal());
-                flashcardButton.addActionListener(event -> setFlashcard(flashcard));
-                flashcardsListPanel.add(flashcardButton, new GBC(0,flashcardCount));
-                flashcardCount++;
-            }
-        }
-
-    }
-
-    public void setFlashcard(Flashcard flashcard) {
+    private void setFlashcard(Flashcard flashcard) {
         flashcardDisplayPanel.setFlashcard(flashcard);
+        activeButton = flashcardButtons.get(flashcard);
         correctAnswerButton.setEnabled(flashcard != null && !flashcard.wasAnsweredToday());
         wrongAnswerButton.setEnabled(flashcard != null && !flashcard.wasAnsweredToday());
     }
+
+    private void addFlashcardButton(Flashcard flashcard, int index) {
+        RectButton flashcardButton = ComponentFactory.createFlashcardListButton(flashcard.getCategoryName() + ": " + flashcard.getFileOrdinal());
+        flashcardButton.setActionListener(event -> {
+            setFlashcard(flashcard);
+            activeButton = flashcardButton;
+        });
+        flashcardsListPanel.add(flashcardButton, new GBC(0, index).setWeight(1,0).setFill(GBC.HORIZONTAL).setInsets(0,0,0,5));
+        flashcards.add(flashcard);
+        flashcardButtons.put(flashcard, flashcardButton);
+    }
+
 }

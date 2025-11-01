@@ -53,7 +53,7 @@ public class XMLUtil {
 
     public static void removeWhitespaces(Element element) {
         NodeList children = element.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
+        for (int i = children.getLength() - 1; i >= 0; i--) {
             Node child = children.item(i);
             if (child instanceof Text text && text.getData().isBlank()) {
                 element.removeChild(child);

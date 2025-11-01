@@ -9,11 +9,14 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DataManager {
 
     private static Map<Integer, Profile> allProfiles;
     private static Map<Integer, Flashcard> allFlashcards;
+
+    private static Set<String> allCategories;
     private static final Map<LocalDate, DailyActivity> dailyActivities = new HashMap<>();
 
     private static Profile currentProfile;
@@ -43,6 +46,18 @@ public class DataManager {
         return allProfiles.get(id);
     }
 
+    public static synchronized void reloadCurrentProfile() {
+        loadCategories();
+        loadFlashcards();
+    }
+
+    public static synchronized String[] getAllCategoriesNames() {
+        if (allCategories == null) {
+            loadCategories();
+        }
+        return allCategories.toArray(new String[0]);
+    }
+
     public static synchronized Flashcard[] getAllFlashcards() {
         if (allFlashcards == null) {
             loadFlashcards();
@@ -55,6 +70,10 @@ public class DataManager {
             loadFlashcards();
         }
         return allFlashcards.get(id);
+    }
+
+    private static synchronized void loadCategories() {
+        allCategories = XMLReader.loadCategories(getCurrentProfile());
     }
 
     private static synchronized void loadFlashcards() {

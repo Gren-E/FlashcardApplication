@@ -5,6 +5,7 @@ import com.fa.io.PDFReader;
 import com.fa.util.gui.ImageUtil;
 
 import javax.swing.JPanel;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -18,7 +19,10 @@ public class FlashcardDisplayPanel extends JPanel {
 
     private boolean isAverse;
 
+    private String noImageMessage;
+
     public FlashcardDisplayPanel() {
+        setOpaque(false);
         addMouseListener(new DisplayMouseAdapter());
     }
 
@@ -27,25 +31,55 @@ public class FlashcardDisplayPanel extends JPanel {
         setToAverse();
     }
 
-    public void setToAverse() {
-        image = PDFReader.loadAverse(flashcard);
-        isAverse = true;
-        repaint();
-    }
-
-    public void setToReverse() {
-        image = PDFReader.loadReverse(flashcard);
-        isAverse = false;
-        repaint();
+    public void setNoImageMessage(String text) {
+        noImageMessage = text;
     }
 
     public Flashcard getFlashcard() {
         return flashcard;
     }
 
+    private void setToAverse() {
+        image = (flashcard == null) ? null : PDFReader.loadAverse(flashcard);
+        isAverse = true;
+        repaint();
+    }
+
+    private void setToReverse() {
+        image = flashcard == null ? null : PDFReader.loadReverse(flashcard);
+        isAverse = false;
+        repaint();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (flashcard == null) {
+            paintText(g);
+        } else {
+            paintFlashcard(g);
+        }
+    }
+
+    private void paintText(Graphics g) {
+        int width = getWidth();
+        int height = getHeight();
+
+        if (width <= 0 || height <=0 || noImageMessage == null) {
+            return;
+        }
+
+        Font font = getFont();
+        g.setFont(font);
+        int textWidth = g.getFontMetrics().stringWidth(noImageMessage);
+        int textHeight = g.getFontMetrics().getHeight();
+        int x = (width - textWidth) / 2;
+        int y = (height - textHeight) / 2;
+        g.drawString(noImageMessage, x, y);
+    }
+
+    private void paintFlashcard(Graphics g) {
         int width = getWidth() - 50;
         int height = getHeight() - 50;
 

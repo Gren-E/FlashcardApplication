@@ -75,7 +75,8 @@ public class XMLReader extends XMLService {
         File flashcardDataFile = AppEnv.getFlashcardInfoFile(profile);
         Document flashcardDataDocument = XMLUtil.loadDocumentFromFile(flashcardDataFile);
         if (flashcardDataDocument == null) {
-            return null;
+            LOG.error("Cannot load xml document from file: " + flashcardDataFile.toString());
+            return categories;
         }
 
         Element root = XMLUtil.getRootElement(flashcardDataDocument);
