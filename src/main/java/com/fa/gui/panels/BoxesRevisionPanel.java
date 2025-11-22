@@ -122,7 +122,10 @@ public class BoxesRevisionPanel extends LearningModesPanel implements DialogUser
         if (totalAnswers == learntRefresher) {
             return;
         }
-        new RevisionMessageDialog(this, totalAnswers >= learntRefresher ?  RevisionMessageDialog.BOXES : RevisionMessageDialog.RANDOM);
+
+        int learntSize = BoxManager.getLearntBox().size();
+        new RevisionMessageDialog(this, totalAnswers >= learntRefresher || learntSize <= learntRefresher - totalAnswers
+                ?  RevisionMessageDialog.BOXES : RevisionMessageDialog.RANDOM);
     }
 
     private void reloadDailyGoalChart() {

@@ -185,7 +185,7 @@ public class XMLReader extends XMLService {
 
     private static LocalDate parseDateFromAttribute(Element element, String attribute) {
         if (element.hasAttribute(attribute)) {
-            String attributeValue = element.getAttribute(ATTRIBUTE_CATEGORY_LAST_ANSWERED);
+            String attributeValue = element.getAttribute(attribute);
             return LocalDate.parse(attributeValue);
         }
 
