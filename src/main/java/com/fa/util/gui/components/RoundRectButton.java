@@ -7,12 +7,12 @@ import java.awt.RenderingHints;
 
 public class RoundRectButton extends HighlightedButton {
 
-    public RoundRectButton(String text) {
-        super(text);
-    }
-
     public RoundRectButton() {
         super();
+    }
+
+    public RoundRectButton(String text) {
+        super(text);
     }
 
     @Override

@@ -67,6 +67,7 @@ public class XMLReader extends XMLService {
         Profile result = new Profile(Integer.parseInt(element.getAttribute(ATTRIBUTE_ID)));
         result.setName(element.getAttribute(ATTRIBUTE_NAME));
         result.setDailyGoal(Integer.parseInt(element.getAttribute(ATTRIBUTE_DAILY_GOAL)));
+        result.setDailyRelearningGoal(Integer.parseInt(element.getAttribute(ATTRIBUTE_DAILY_RELEARNING_GOAL)));
         return result;
     }
 
@@ -139,7 +140,9 @@ public class XMLReader extends XMLService {
                 FlashcardStats stats = flashcardStats.get(flashcard.getId());
                 flashcard.setTotalAnswers(stats.getTotalAnswers());
                 flashcard.setCorrectAnswers(stats.getCorrectAnswers());
-                flashcard.setLastAnswered(stats.getLastAnsweredDate());
+                flashcard.setCategoryLastAnswered(stats.getCategoryLastAnswered());
+                flashcard.setCategoryLastAnsweredCorrectly(stats.getCategoryLastAnsweredCorrectly());
+                flashcard.setBoxLastAnswered(stats.getBoxLastAnswered());
             }
         }
 
@@ -170,16 +173,23 @@ public class XMLReader extends XMLService {
             stats.setTotalAnswers(Integer.parseInt(element.getAttribute(ATTRIBUTE_ANSWERED)));
             stats.setCorrectAnswers(Integer.parseInt(element.getAttribute(ATTRIBUTE_ANSWERED_CORRECTLY)));
 
-            if (element.hasAttribute(ATTRIBUTE_LAST_ANSWERED)) {
-                String lastAnswered = element.getAttribute(ATTRIBUTE_LAST_ANSWERED);
-                LocalDate date = LocalDate.parse(lastAnswered);
-                stats.setLastAnswered(date);
-            }
+            stats.setCategoryLastAnswered(parseDateFromAttribute(element, ATTRIBUTE_CATEGORY_LAST_ANSWERED));
+            stats.setCategoryLastAnsweredCorrectly(parseDateFromAttribute(element, ATTRIBUTE_CATEGORY_LAST_ANSWERED_CORRECTLY));
+            stats.setBoxLastAnswered(parseDateFromAttribute(element, ATTRIBUTE_BOX_LAST_ANSWERED));
 
             result.put(id, stats);
         }
 
         return result;
+    }
+
+    private static LocalDate parseDateFromAttribute(Element element, String attribute) {
+        if (element.hasAttribute(attribute)) {
+            String attributeValue = element.getAttribute(ATTRIBUTE_CATEGORY_LAST_ANSWERED);
+            return LocalDate.parse(attributeValue);
+        }
+
+        return null;
     }
 
     public static DailyActivity loadDailyActivity(LocalDate date, Profile profile) {
@@ -202,6 +212,7 @@ public class XMLReader extends XMLService {
                 break;
             }
         }
+
         return result;
     }
 

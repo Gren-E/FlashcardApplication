@@ -47,15 +47,14 @@ public class SimpleScrollBarUI extends BasicScrollBarUI {
         float range = sb.getMaximum() - min;
         float value = sb.getValue();
 
-        int thumbH = (range <= 0)
-                ? getMaximumThumbSize().height : (int)(trackH * (extent / range));
+        int thumbH = (range <= 0) ? getMaximumThumbSize().height : (int) (trackH * (extent / range));
         thumbH = Math.max(thumbH, getMinimumThumbSize().height);
         thumbH = Math.min(thumbH, getMaximumThumbSize().height);
 
         int thumbY = incrButtonY - incrGap - thumbH;
         if (value < (sb.getMaximum() - sb.getVisibleAmount())) {
             float thumbRange = trackH - thumbH;
-            thumbY = (int)(0.5f + (thumbRange * ((value - min) / (range - extent))));
+            thumbY = (int) (0.5f + (thumbRange * ((value - min) / (range - extent))));
             thumbY +=  decrButtonY + decrButtonH + decrGap;
         }
 
@@ -67,8 +66,6 @@ public class SimpleScrollBarUI extends BasicScrollBarUI {
         decrButton.setBounds(itemX, decrButtonY, itemW, decrButtonH);
         incrButton.setBounds(itemX, incrButtonY, itemW, incrButtonH);
 
-        /* Update the trackRect field.
-         */
         int itrackY = decrButtonY + decrButtonH + decrGap;
         int itrackH = incrButtonY - incrGap - itrackY;
         trackRect.setBounds(itemX, itrackY, itemW, itrackH);
@@ -83,9 +80,11 @@ public class SimpleScrollBarUI extends BasicScrollBarUI {
             if ((thumbY + thumbH) > incrButtonY - incrGap) {
                 thumbY = incrButtonY - incrGap - thumbH;
             }
+
             if (thumbY  < (decrButtonY + decrButtonH + decrGap)) {
                 thumbY = decrButtonY + decrButtonH + decrGap + 1;
             }
+
             setThumbBounds(itemX, thumbY, itemW, thumbH);
         }
     }

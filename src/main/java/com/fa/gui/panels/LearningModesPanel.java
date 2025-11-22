@@ -29,10 +29,10 @@ public class LearningModesPanel extends JPanel {
 
         flashcardDisplayPanel = new FlashcardDisplayPanel();
 
-        displayPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
-        displayPanel.add(flashcardDisplayPanel, new GBC(0,0).setWeight(1,1).setFill(GBC.BOTH).setInsets(20, 50, 20, 50));
+        displayPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), true);
+        displayPanel.add(flashcardDisplayPanel, new GBC(0,0).setWeight(1,1).setFill(GBC.BOTH));
 
-        buttonPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
+        buttonPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), false);
 
         correctAnswerButton = ComponentFactory.createStandardAppButton("Correct");
         correctAnswerButton.setBackground(AppColorPalette.getButtonSuccessBackground());
@@ -41,10 +41,14 @@ public class LearningModesPanel extends JPanel {
         wrongAnswerButton.setBackground(AppColorPalette.getButtonFailBackground());
 
         buttonPanel.add(correctAnswerButton, new GBC(0,0).setInsets(5,15,5,5));
-        buttonPanel.add(wrongAnswerButton, new GBC(1,0).setInsets(5,5,5,15));
+        buttonPanel.add(wrongAnswerButton, new GBC(1, 0).setInsets(5, 5, 5, 15));
 
         exitBrowserButton = ComponentFactory.createStandardAppButton("Back",
-                event -> parent.getCardLayout().show(parent.getContentPanel(), AppWindow.CATEGORY_CHOICE_PANEL));
+                event -> {
+                    parent.getCardLayout().show(parent.getContentPanel(), AppWindow.PROFILE_MENU_PANEL);
+                    parent.getProfileMenuPanel().reloadCategories();
+                }
+        );
     }
 
 }

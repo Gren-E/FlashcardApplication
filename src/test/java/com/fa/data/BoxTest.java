@@ -13,12 +13,11 @@ public class BoxTest extends AbstractTest {
     @Test
     public void boxTest() {
         Box box = new Box(2);
-        Assertions.assertEquals(2, box.getBoxId());
+        Assertions.assertEquals(2, box.getIndex());
         Assertions.assertEquals(0, box.getDuration());
         Assertions.assertEquals(0, box.size());
         Assertions.assertArrayEquals(new Flashcard[0], box.getFlashcardsIds());
-        Assertions.assertNull(box.pollFlashcard());
-        Assertions.assertNull(box.pollRandomFlashcard());
+        Assertions.assertNull(box.getRandomFlashcard());
 
         Flashcard flashcard = new Flashcard();
         flashcard.setId(3);
@@ -29,12 +28,10 @@ public class BoxTest extends AbstractTest {
             box.setDuration(3);
             Assertions.assertEquals(1, box.size());
             Assertions.assertEquals(3, box.getDuration());
-            Assertions.assertEquals(flashcard, box.pollFlashcard());
-            Assertions.assertEquals(0, box.size());
 
             box.addLastFlashcard(flashcard);
-            Assertions.assertEquals(flashcard, box.pollRandomFlashcard());
-            Assertions.assertEquals(0, box.size());
+            Assertions.assertEquals(flashcard, box.getRandomFlashcard());
+            Assertions.assertEquals(2, box.size());
         }
     }
 

@@ -18,7 +18,7 @@ import java.awt.GridBagLayout;
 public class AppWindow extends JFrame {
 
     public static final String PROFILE_CHOICE_PANEL = "PROFILE_CHOICE_PANEL";
-    public static final String CATEGORY_CHOICE_PANEL = "CATEGORY_CHOICE_PANEL";
+    public static final String PROFILE_MENU_PANEL = "PROFILE_MENU_PANEL";
     public static final String FLASHCARDS_BROWSER_PANEL = "FLASHCARDS_BROWSER_PANEL";
     public static final String BOXES_REVISION_PANEL = "BOXES_REVISION_PANEL";
     public static final String EXAM_PANEL = "EXAM_PANEL";
@@ -53,7 +53,7 @@ public class AppWindow extends JFrame {
         examPanel = new ExamPanel(this);
 
         contentPanel.add(profileChoicePanel, PROFILE_CHOICE_PANEL);
-        contentPanel.add(profileMenuPanel, CATEGORY_CHOICE_PANEL);
+        contentPanel.add(profileMenuPanel, PROFILE_MENU_PANEL);
         contentPanel.add(flashcardsBrowserPanel, FLASHCARDS_BROWSER_PANEL);
         contentPanel.add(boxesRevisionPanel, BOXES_REVISION_PANEL);
         contentPanel.add(examPanel, EXAM_PANEL);

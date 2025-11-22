@@ -6,26 +6,19 @@ import com.fa.io.DataManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class ExamBuilder {
 
-    private List<String> categories;
+    private final Set<String> categories;
 
     private int durationInMinutes;
     private int numberOfQuestions;
 
     public ExamBuilder() {
-        categories = new ArrayList<>();
-    }
-
-    public int getDurationInMinutes() {
-        return durationInMinutes;
-    }
-
-    public int getNumberOfQuestions() {
-        return numberOfQuestions;
+        categories = new HashSet<>();
     }
 
     public ExamBuilder setDurationInMinutes(int durationInMinutes) {
@@ -38,7 +31,8 @@ public class ExamBuilder {
         return this;
     }
 
-    public ExamBuilder addCategories(String[] categories) {
+    public ExamBuilder setCategories(String[] categories) {
+        this.categories.clear();
         this.categories.addAll(Arrays.asList(categories));
         return this;
     }
@@ -87,4 +81,5 @@ public class ExamBuilder {
 
         return new Exam(examFlashcards, durationInMinutes);
     }
+
 }

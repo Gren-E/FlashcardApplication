@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class XMLUtil {
 
@@ -37,7 +39,7 @@ public class XMLUtil {
     }
 
     public static void saveDocument(Document document, File file, Object indentSize) {
-        try(FileOutputStream output = new FileOutputStream(file)) {
+        try (FileOutputStream output = new FileOutputStream(file)) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute("indent-number", indentSize);
             Transformer transformer = transformerFactory.newTransformer();
@@ -52,6 +54,10 @@ public class XMLUtil {
     }
 
     public static void removeWhitespaces(Element element) {
+        if (element == null) {
+            return;
+        }
+
         NodeList children = element.getChildNodes();
         for (int i = children.getLength() - 1; i >= 0; i--) {
             Node child = children.item(i);
@@ -102,4 +108,82 @@ public class XMLUtil {
         return document.getDocumentElement();
     }
 
+    public static boolean createIfNotExisting(File file, String rootTag) {
+        if (file.exists()) {
+            return true;
+        }
+
+        boolean isCreated = FileUtil.createIfNotExisting(file);
+        if (!isCreated) {
+            return false;
+        }
+
+        Document document = XMLUtil.createEmptyDocument();
+        Element root = document.createElement(rootTag);
+        document.appendChild(root);
+
+        XMLUtil.saveDocument(document, file, XMLUtil.DEFAULT_INDENT);
+        return true;
+    }
+
+    public static boolean forEachSubElement(Element root, Consumer<Element> action) {
+        if (root == null) {
+            LOG.error("Cannot perform action on sub elements because root is null.");
+            return false;
+        }
+
+        for (Element childElement : XMLUtil.getElements(root.getChildNodes())) {
+            action.accept(childElement);
+        }
+
+        return true;
+    }
+
+    public static boolean forEachSubElement(Document document, Consumer<Element> action) {
+        if (document == null) {
+            LOG.error("Cannot perform action on sub elements because document is null.");
+            return false;
+        }
+
+        Element root = document.getDocumentElement();
+        return forEachSubElement(root, action);
+    }
+
+    public static boolean forEachSubElement(File file, Consumer<Element> action) {
+        if (file == null) {
+            LOG.error("Cannot perform action on sub elements because file is null.");
+            return false;
+        }
+
+        Document document = XMLUtil.loadDocumentFromFile(file);
+        return forEachSubElement(document, action);
+    }
+
+    public static boolean removeSubElements(File file, Predicate<Element> filter) {
+        if (file == null) {
+            LOG.error("Cannot remove sub elements because file is null.");
+            return false;
+        }
+
+        Document document = XMLUtil.loadDocumentFromFile(file);
+        if (document == null) {
+            LOG.error("Cannot remove sub elements because document is null.");
+            return false;
+        }
+
+        Element root = document.getDocumentElement();
+        if (root == null) {
+            LOG.error("Cannot remove sub elements because root is null.");
+            return false;
+        }
+
+        for (Element childElement : XMLUtil.getElements(root.getChildNodes())) {
+            if (filter.test(childElement)) {
+                root.removeChild(childElement);
+            }
+        }
+
+        XMLUtil.saveDocument(document, file, XMLUtil.DEFAULT_INDENT);
+        return true;
+    }
 }

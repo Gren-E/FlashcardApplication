@@ -14,6 +14,7 @@ public class DragMouseAdapter extends MouseAdapter {
     public DragMouseAdapter(Component component) {
         this.component = component;
     }
+
     @Override
     public void mousePressed(MouseEvent e) {
         super.mousePressed(e);
@@ -26,5 +27,5 @@ public class DragMouseAdapter extends MouseAdapter {
         super.mouseDragged(e);
         component.setLocation(e.getXOnScreen() - xDiff, e.getYOnScreen() - yDiff);
     }
-}
 
+}

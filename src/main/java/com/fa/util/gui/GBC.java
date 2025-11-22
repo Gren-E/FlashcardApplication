@@ -29,7 +29,6 @@ public class GBC extends GridBagConstraints {
 		this.gridheight = gridheight;
 	}
 
-
 	/**
 	 * Sets anchor for the GridBagLayout constraints.
 	 * @param anchor anchor of the constraints

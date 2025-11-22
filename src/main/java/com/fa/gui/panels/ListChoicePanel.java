@@ -1,5 +1,6 @@
 package com.fa.gui.panels;
 
+import com.fa.gui.AppFonts;
 import com.fa.gui.AppWindow;
 import com.fa.gui.ComponentFactory;
 import com.fa.util.gui.GBC;
@@ -45,16 +46,22 @@ public abstract class ListChoicePanel<T> extends JPanel {
         revalidate();
     }
 
-    public JPanel createElementLabelPanel(String elementName) {
-        JPanel elementPanel = ComponentFactory.createAccentRoundRecJPanel(new GridBagLayout());
+    public JPanel createElementLabelPanel(String elementName, T element) {
+        JPanel elementPanel = ComponentFactory.createAccentRoundRecJPanel(new GridBagLayout(), false);
+        JLabel deleteLabel = ComponentFactory.createAccentInteractiveJLabel("✘", () -> deleteElement(element));
+        deleteLabel.setFont(AppFonts.getSymbolFont());
+
         JLabel elementNameLabel = ComponentFactory.createAccentJLabel(elementName);
 
-        elementPanel.add(elementNameLabel, new GBC(0,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setInsets(5,15,5,10));
+        elementPanel.add(deleteLabel, new GBC(0,0).setInsets(5,15,5,5));
+        elementPanel.add(elementNameLabel, new GBC(1,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setInsets(5,15,5,10));
 
         return elementPanel;
     }
 
     public abstract JPanel createElementPanel(T element);
+
+    public abstract void deleteElement(T element);
 
     @Override
     public void setEnabled(boolean isEnabled) {
@@ -62,4 +69,5 @@ public abstract class ListChoicePanel<T> extends JPanel {
     }
 
     protected abstract T[] loadElements();
+
 }

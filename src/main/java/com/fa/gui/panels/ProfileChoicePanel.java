@@ -11,6 +11,7 @@ import com.fa.util.gui.components.RoundRectButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 
 public class ProfileChoicePanel extends JPanel implements DialogUser {
@@ -35,10 +36,16 @@ public class ProfileChoicePanel extends JPanel implements DialogUser {
             }
         });
 
+        JPanel contentPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), true);
+        contentPanel.setMinimumSize(new Dimension(450,500));
+        contentPanel.setPreferredSize(new Dimension(450,500));
+
+        contentPanel.add(chooseProfileLabel, new GBC(0,0).setInsets(20));
+        contentPanel.add(profileListPanel, new GBC(0,1));
+        contentPanel.add(newProfileButton, new GBC(0,2).setInsets(10));
+
         setLayout(new GridBagLayout());
-        add(chooseProfileLabel, new GBC(0,0).setInsets(20));
-        add(profileListPanel, new GBC(0,1));
-        add(newProfileButton, new GBC(0,2).setInsets(10));
+        add(contentPanel, new GBC(0,0));
     }
 
     @Override

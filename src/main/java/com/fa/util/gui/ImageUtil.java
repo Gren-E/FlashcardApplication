@@ -1,5 +1,8 @@
 package com.fa.util.gui;
 
+import org.apache.log4j.Logger;
+
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -8,8 +11,21 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
 
 public class ImageUtil {
+
+    private static final Logger LOG = Logger.getLogger(ImageUtil.class);
+
+    public static Image readImage(File imageFile) {
+        try {
+            return ImageIO.read(imageFile);
+        } catch (IOException e) {
+            LOG.error(String.format("Could not read image: %s.", imageFile), e);
+            return null;
+        }
+    }
 
     public static BufferedImage deepCopy(BufferedImage bi) {
         ColorModel cm = bi.getColorModel();
@@ -22,15 +38,15 @@ public class ImageUtil {
         int imageHeight = image.getHeight(null);
         int imageWidth = image.getWidth(null);
 
-        if(targetWidth <= 0) {
+        if (targetWidth <= 0) {
             targetWidth = (int) (imageWidth * ((double) targetHeight / imageHeight));
         }
 
-        if(targetHeight <= 0) {
+        if (targetHeight <= 0) {
             targetHeight = (int) (imageHeight * ((double) targetWidth / imageWidth));
         }
 
-        if(targetWidth == imageWidth && targetHeight == imageHeight) {
+        if (targetWidth == imageWidth && targetHeight == imageHeight) {
             return image;
         }
 
@@ -90,7 +106,7 @@ public class ImageUtil {
         return replaceColor(image, originalColor, newColor, 0);
     }
 
-    public static Image replaceColor(Image image, Color originalColor, Color newColor, int alpha) {
+    public static Image replaceColor(Image image, Color originalColor, Color newColor, int a) {
         BufferedImage img = deepCopy((BufferedImage) image);
         int width = img.getWidth();
         int height = img.getHeight();
@@ -99,13 +115,13 @@ public class ImageUtil {
         int origGreen = originalColor.getGreen();
         int origBlue = originalColor.getBlue();
 
-        for(int x = 0; x < width; ++x) {
-            for(int y = 0; y < height; ++y) {
-                Color xyColor = new Color(img.getRGB(x, y));
-                if(xyColor.getRed() >= origRed - alpha && xyColor.getRed() <= origRed + alpha) {
-                    if(xyColor.getGreen() >= origGreen - alpha && xyColor.getGreen() <= origGreen + alpha) {
-                        if(xyColor.getBlue() >= origBlue - alpha && xyColor.getBlue() <= origBlue + alpha) {
-                            img.setRGB(x, y, newColor.getRGB());
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                Color xyColor = new Color(img.getRGB(x, y), true);
+                if (xyColor.getRed() >= origRed - a && xyColor.getRed() <= origRed + a) {
+                    if (xyColor.getGreen() >= origGreen - a && xyColor.getGreen() <= origGreen + a) {
+                        if (xyColor.getBlue() >= origBlue - a && xyColor.getBlue() <= origBlue + a) {
+                            img.setRGB(x, y, new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), xyColor.getAlpha()).getRGB());
                         }
                     }
                 }
@@ -114,7 +130,5 @@ public class ImageUtil {
 
         return img;
     }
-
-
 
 }

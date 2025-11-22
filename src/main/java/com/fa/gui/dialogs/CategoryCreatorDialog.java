@@ -23,7 +23,7 @@ public class CategoryCreatorDialog extends CreatorDialog {
 
     public CategoryCreatorDialog(DialogUser dialogUser) {
         super(dialogUser);
-        setSize(500, 300);
+        setSize(500, 320);
         setLocationRelativeTo(dialogUser.getJComponent());
 
         categoryNameField = ComponentFactory.createStandardJTextField();
@@ -35,7 +35,7 @@ public class CategoryCreatorDialog extends CreatorDialog {
         RoundRectButton fileBrowseButton = ComponentFactory.createStandardAppButton("Browse");
         fileBrowseButton.setActionListener(event -> selectSourcePdfFile());
 
-        parametersPanel.add(categoryNameField, new GBC(0,0).setWeight(1,0.3).setFill(GBC.HORIZONTAL).setInsets(0, 20, 0,20));
+        parametersPanel.add(categoryNameField, new GBC(0,0).setWeight(1,0.3).setFill(GBC.HORIZONTAL).setInsets(10, 20, 0,20));
         parametersPanel.add(fileNameField, new GBC(0,1).setWeight(1,0.3).setFill(GBC.HORIZONTAL).setInsets(0, 20, 0,20));
         parametersPanel.add(fileBrowseButton, new GBC(0,2).setWeight(1,0.4).setInsets(0, 20, 10,20));
 

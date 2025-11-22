@@ -67,13 +67,8 @@ public abstract class HighlightedButton extends JPanel {
         this.mouseClickAction = action;
     }
 
-    public void setForegroundDisabled() {
-        foregroundDisabledColor = foregroundColor;
-        updateForeground();
-    }
-
     private void handleMouseReleased() {
-        if(mouseClickAction != null && isEnabled()) {
+        if (mouseClickAction != null && isEnabled()) {
             mouseClickAction.actionPerformed(null);
         }
     }
@@ -86,7 +81,7 @@ public abstract class HighlightedButton extends JPanel {
 
     @Override
     public void setFont(Font font) {
-        if(textLabel != null) {
+        if (textLabel != null) {
             textLabel.setFont(font);
         }
     }

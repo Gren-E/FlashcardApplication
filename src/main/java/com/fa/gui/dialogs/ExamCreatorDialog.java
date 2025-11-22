@@ -36,7 +36,7 @@ public class ExamCreatorDialog extends CreatorDialog {
 
     public ExamCreatorDialog(DialogUser dialogUser, AppWindow window) {
         super(dialogUser);
-        setSize(300, 320);
+        setSize(340, 340);
         setLocationRelativeTo(dialogUser.getJComponent());
 
         this.window = window;
@@ -44,8 +44,8 @@ public class ExamCreatorDialog extends CreatorDialog {
         examBuilder = new ExamBuilder();
         examCategories = new HashSet<>();
 
-        JLabel durationLabel = ComponentFactory.createStandardJLabel("Exam duration:");
-        JLabel numberOfQuestionsLabel = ComponentFactory.createStandardJLabel("Number of questions:");
+        JLabel durationLabel = ComponentFactory.createAccentJLabel("Exam duration:");
+        JLabel numberOfQuestionsLabel = ComponentFactory.createAccentJLabel("Number of questions:");
 
         durationField = ComponentFactory.createStandardJTextField("30");
         durationField.getDocument().addDocumentListener(new TextFieldListener(this::refreshAcceptButton));
@@ -55,7 +55,7 @@ public class ExamCreatorDialog extends CreatorDialog {
 
         categoriesPanel = ComponentFactory.createContentRoundRecJPanel();
 
-        parametersPanel.add(durationLabel, new GBC(0,0).setWeight(0.7,0.2).setFill(GBC.HORIZONTAL).setInsets(0, 20, 0,0));
+        parametersPanel.add(durationLabel, new GBC(0,0).setWeight(0.7,0.2).setFill(GBC.HORIZONTAL).setInsets(10, 20, 0,0));
         parametersPanel.add(durationField, new GBC(1,0).setWeight(0.3, 0.2).setFill(GBC.HORIZONTAL).setInsets(0, 0, 0,20));
         parametersPanel.add(numberOfQuestionsLabel, new GBC(0,1).setWeight(0.7,0.2).setFill(GBC.HORIZONTAL).setInsets(0, 20, 0,0));
         parametersPanel.add(numberOfQuestionsField, new GBC(1,1).setWeight(0.3, 0.2).setFill(GBC.HORIZONTAL).setInsets(0, 0, 0,20));
@@ -82,7 +82,7 @@ public class ExamCreatorDialog extends CreatorDialog {
             final int index = i;
             JPanel categoryPanel = new JPanel(new GridBagLayout());
             categoryPanel.setOpaque(false);
-            JLabel categoryNameLabel = ComponentFactory.createStandardJLabel(categories[i]);
+            JLabel categoryNameLabel = ComponentFactory.createStandardJLabel(String.format("%s (%d)", categories[i], DataManager.getAllFlashcardsFromCategory(categories[i]).length));
             JCheckBox categoryCheckBox = new JCheckBox();
             categoryCheckBox.setOpaque(false);
             categoryCheckBox.addActionListener(event -> {
@@ -104,7 +104,20 @@ public class ExamCreatorDialog extends CreatorDialog {
             int duration = Integer.parseInt(durationField.getText());
             int numberOfQuestions = Integer.parseInt(numberOfQuestionsField.getText());
 
-            if (duration < 5 || duration > 120 || numberOfQuestions < 1) {
+            if (duration < 1) {
+                LOG.warn("Duration must be longer than 1 minute.");
+                return false;
+            }
+
+            if (numberOfQuestions < 1) {
+                LOG.warn("Number of questions must be greater than 1.");
+                return false;
+            }
+
+            if (numberOfQuestions > examCategories.stream()
+                    .map(category -> DataManager.getAllFlashcardsFromCategory(category).length)
+                    .reduce(0, Integer::sum)) {
+                LOG.warn("Not enough questions in selected categories.");
                 return false;
             }
         } catch (NumberFormatException e) {
@@ -121,7 +134,7 @@ public class ExamCreatorDialog extends CreatorDialog {
 
     @Override
     public void handleAccept() {
-        Exam exam = examBuilder.addCategories(examCategories.toArray(new String[0]))
+        Exam exam = examBuilder.setCategories(examCategories.toArray(new String[0]))
                 .setDurationInMinutes(Integer.parseInt(durationField.getText()))
                 .setNumberOfQuestions(Integer.parseInt(numberOfQuestionsField.getText()))
                 .build();

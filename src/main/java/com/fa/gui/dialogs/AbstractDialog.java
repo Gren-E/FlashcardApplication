@@ -2,17 +2,17 @@ package com.fa.gui.dialogs;
 
 import com.fa.gui.AppColorPalette;
 import com.fa.gui.ComponentFactory;
+import com.fa.util.gui.components.RoundRectPanel;
 import com.fa.util.listeners.DragMouseAdapter;
 
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 
 public abstract class AbstractDialog extends JDialog {
 
     private final DialogUser dialogUser;
 
-    protected final JPanel mainPanel;
+    protected final RoundRectPanel mainPanel;
 
     public AbstractDialog(DialogUser dialogUser) {
         setUndecorated(true);
@@ -24,7 +24,7 @@ public abstract class AbstractDialog extends JDialog {
         this.dialogUser = dialogUser;
         dialogUser.openDialog();
 
-        mainPanel = ComponentFactory.createAccentRoundRecJPanel(new GridBagLayout());
+        mainPanel = ComponentFactory.createAccentRoundRecJPanel(new GridBagLayout(), true);
 
         DragMouseAdapter dragMouseAdapter = new DragMouseAdapter(this);
         mainPanel.addMouseListener(dragMouseAdapter);

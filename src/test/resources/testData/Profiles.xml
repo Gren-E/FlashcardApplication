@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles>
-    <profile id="1" name="Profile1"/>
-    <profile id="2" name="Profile2"/>
-    <profile id="3" name="Profile3"/>
+    <profile daily_goal="20" id="1" name="Profile1" daily_relearning_goal="3"/>
+    <profile daily_goal="20" id="2" name="Profile2" daily_relearning_goal="3"/>
+    <profile daily_goal="20" id="3" name="Profile3" daily_relearning_goal="3"/>
 </profiles>

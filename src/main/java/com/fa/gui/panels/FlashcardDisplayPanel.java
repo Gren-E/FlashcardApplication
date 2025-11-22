@@ -5,6 +5,7 @@ import com.fa.io.PDFReader;
 import com.fa.util.gui.ImageUtil;
 
 import javax.swing.JPanel;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -24,6 +25,7 @@ public class FlashcardDisplayPanel extends JPanel {
     public FlashcardDisplayPanel() {
         setOpaque(false);
         addMouseListener(new DisplayMouseAdapter());
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     public void setFlashcard(Flashcard flashcard) {
@@ -106,10 +108,12 @@ public class FlashcardDisplayPanel extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent event) {
-            if (isAverse) {
-                setToReverse();
-            } else {
-                setToAverse();
+            if (isEnabled()) {
+                if (isAverse) {
+                    setToReverse();
+                } else {
+                    setToAverse();
+                }
             }
         }
 

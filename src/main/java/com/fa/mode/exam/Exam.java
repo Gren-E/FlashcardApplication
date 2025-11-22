@@ -8,11 +8,11 @@ import java.util.Arrays;
 
 public class Exam {
 
-    private Question[] questions;
+    private final Question[] questions;
 
     private LocalDateTime startTimestamp;
 
-    private int durationInMinutes;
+    private final int durationInMinutes;
 
     public Exam(Flashcard[] flashcards, int durationInMinutes) {
         questions = Arrays.stream(flashcards).map((Question::new)).toArray(Question[]::new);
@@ -28,6 +28,10 @@ public class Exam {
     }
 
     public boolean isTimeUp() {
+        if (startTimestamp == null) {
+            return false;
+        }
+
         return LocalDateTime.now().isAfter(getFinishTimestamp());
     }
 
@@ -39,12 +43,8 @@ public class Exam {
         return questions.length;
     }
 
-    public void answer(int index, boolean answeredCorrectly) {
-        getQuestion(index).answer(answeredCorrectly);
-    }
-
     public Question getNextUnansweredQuestion(int currentIndex) {
-        if(!(currentIndex >= 0 && currentIndex < countQuestions())) {
+        if(currentIndex < 0 || currentIndex >= countQuestions()) {
             throw new ArrayIndexOutOfBoundsException(String.format("Current index: %d out of bounds (%d questions).", currentIndex, countQuestions()));
         }
 
@@ -80,7 +80,20 @@ public class Exam {
         return -1;
     }
 
+    public long countAnsweredCorrectly() {
+        return Arrays.stream(questions).filter(Question::wasAnsweredCorrectly).count();
+    }
+
+    public long countAnsweredIncorrectly() {
+        return Arrays.stream(questions).filter(Question::wasAnsweredIncorrectly).count();
+    }
+
+    public LocalDateTime getStartTimestamp() {
+        return startTimestamp;
+    }
+
     public LocalDateTime getFinishTimestamp() {
         return startTimestamp.plusMinutes(durationInMinutes);
     }
+
 }

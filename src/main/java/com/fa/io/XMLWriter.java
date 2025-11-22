@@ -7,6 +7,7 @@ import com.fa.data.DailyActivity;
 import com.fa.data.IDAllocator;
 import com.fa.data.Profile;
 import com.fa.data.fc.Flashcard;
+import com.fa.util.FileUtil;
 import com.fa.util.XMLUtil;
 
 import org.apache.log4j.Logger;
@@ -15,7 +16,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class XMLWriter extends XMLService {
@@ -52,9 +55,60 @@ public class XMLWriter extends XMLService {
 
         profileElement.setAttribute(ATTRIBUTE_NAME, String.valueOf(profile.getName()));
         profileElement.setAttribute(ATTRIBUTE_DAILY_GOAL, String.valueOf(profile.getDailyGoal()));
+        profileElement.setAttribute(ATTRIBUTE_DAILY_RELEARNING_GOAL, String.valueOf(profile.getDailyRelearningGoal()));
 
         XMLUtil.saveDocument(profileFileDocument, profileFile, XMLUtil.DEFAULT_INDENT);
 
+        File boxDataFile = AppEnv.getBoxesFile(profile);
+        Document boxDataDocument = XMLUtil.loadDocumentFromFile(boxDataFile);
+        if (boxDataDocument == null) {
+            LOG.info("Could not load document from xml file, new document created.");
+            boxDataDocument = XMLUtil.createEmptyDocument();
+        }
+
+        Element boxRoot = XMLUtil.getRootElement(boxDataDocument);
+        if (boxRoot == null) {
+            boxRoot = boxDataDocument.createElement(ELEMENT_BOXES);
+            boxDataDocument.appendChild(boxRoot);
+        }
+
+        if (XMLUtil.getElements(boxRoot.getChildNodes()).length == 0) {
+            createStandardBoxSet(boxRoot, boxDataDocument);
+        }
+
+        XMLUtil.saveDocument(boxDataDocument, boxDataFile, XMLUtil.DEFAULT_INDENT);
+    }
+
+    public static void deleteProfile(Profile profile) {
+        File profileDirectory = AppEnv.getProfileDirectory(profile);
+        try {
+            FileUtil.deleteDirectory(profileDirectory);
+        } catch (IOException e) {
+            LOG.error("Could not delete file.", e);
+            return;
+        }
+
+        File profileFile = AppEnv.getProfileFile();
+        Document profileFileDocument = XMLUtil.loadDocumentFromFile(profileFile);
+        if (profileFileDocument == null) {
+            LOG.info("Cannot delete profile, document is null.");
+            return;
+        }
+
+        Element root = XMLUtil.getRootElement(profileFileDocument);
+        if (root == null) {
+            LOG.info("Cannot delete profile, root is null.");
+            return;
+        }
+
+        for (Element element : XMLUtil.getElements(root.getChildNodes())) {
+            if (Objects.equals(element.getAttribute(ATTRIBUTE_ID), (String.valueOf(profile.getId())))) {
+                root.removeChild(element);
+                break;
+            }
+        }
+
+        XMLUtil.saveDocument(profileFileDocument, profileFile, XMLUtil.DEFAULT_INDENT);
     }
 
     public static void saveBoxData(Profile profile) {
@@ -74,9 +128,30 @@ public class XMLWriter extends XMLService {
         XMLUtil.saveDocument(boxDataDocument, boxData, XMLUtil.DEFAULT_INDENT);
     }
 
+    private static void createStandardBoxSet(Element root, Document boxDataDocument) {
+        Box reserve = new Box(0);
+        Box box1 = new Box(1);
+        Box box2 = new Box(2);
+        Box box3 = new Box(3);
+        Box box4 = new Box(4);
+        Box learnt = new Box(5);
+
+        box1.setDuration(1);
+        box2.setDuration(3);
+        box3.setDuration(7);
+        box4.setDuration(14);
+
+        root.appendChild(createBoxElement(reserve, boxDataDocument));
+        root.appendChild(createBoxElement(box1, boxDataDocument));
+        root.appendChild(createBoxElement(box2, boxDataDocument));
+        root.appendChild(createBoxElement(box3, boxDataDocument));
+        root.appendChild(createBoxElement(box4, boxDataDocument));
+        root.appendChild(createBoxElement(learnt, boxDataDocument));
+    }
+
     private static Element createBoxElement(Box box, Document boxDataDocument) {
         Element element = boxDataDocument.createElement(ELEMENT_BOX);
-        element.setAttribute(ATTRIBUTE_ID, String.valueOf(box.getBoxId()));
+        element.setAttribute(ATTRIBUTE_ID, String.valueOf(box.getIndex()));
         element.setAttribute(ATTRIBUTE_DURATION, String.valueOf(box.getDuration()));
         for (int flashcardId : box.getFlashcardsIds()) {
             Element flashcardElement = createFlashcardElement(flashcardId, boxDataDocument);
@@ -85,17 +160,64 @@ public class XMLWriter extends XMLService {
         return element;
     }
 
+    public static void deleteCategory(String categoryName, Profile profile) {
+        File flashcardInfoFile = AppEnv.getFlashcardInfoFile(profile);
+        XMLUtil.forEachSubElement(flashcardInfoFile, element -> {
+            if (Objects.equals(element.getAttribute(ATTRIBUTE_CATEGORY_NAME), categoryName)) {
+                int id = Integer.parseInt(element.getAttribute(ATTRIBUTE_ID));
+                deleteFlashcardStats(id, profile);
+                deleteBoxData(id, profile);
+            }
+        });
+        XMLUtil.removeSubElements(flashcardInfoFile, element -> Objects.equals(element.getAttribute(ATTRIBUTE_CATEGORY_NAME), categoryName));
+    }
+
+    private static void deleteFlashcardStats(int id, Profile profile) {
+        File flashcardStatsFile = AppEnv.getFlashcardStatsFile(profile);
+        XMLUtil.removeSubElements(flashcardStatsFile, element -> Objects.equals(element.getAttribute(ATTRIBUTE_ID), String.valueOf(id)));
+    }
+
+    private static void deleteBoxData(int id, Profile profile) {
+        File boxDataFile = AppEnv.getBoxesFile(profile);
+        Document boxDataDocument = XMLUtil.loadDocumentFromFile(boxDataFile);
+        if (boxDataDocument == null) {
+            LOG.info("Cannot delete flashcard box data, document is null.");
+            return;
+        }
+
+        Element root = XMLUtil.getRootElement(boxDataDocument);
+        if (root == null) {
+            LOG.info("Cannot delete flashcard box data, root is null.");
+            return;
+        }
+
+        for (Element boxElement : XMLUtil.getElements(root.getChildNodes())) {
+            for (Element flashcardElement : XMLUtil.getElements(boxElement.getChildNodes())) {
+                if (flashcardElement.getAttribute(ATTRIBUTE_ID).equals(String.valueOf(id))) {
+                    boxElement.removeChild(flashcardElement);
+                }
+            }
+        }
+        XMLUtil.saveDocument(boxDataDocument, boxDataFile, XMLUtil.DEFAULT_INDENT);
+    }
+
     public static void addNewFlashcardsToBoxes(Flashcard[] flashcards, Profile profile) {
         if (profile == null) {
             throw new NullPointerException("Cannot save flashcard data - profile not determined.");
         }
         File boxData = AppEnv.getBoxesFile(profile);
         Document boxDataDocument = XMLUtil.loadDocumentFromFile(boxData);
+        if (boxDataDocument == null) {
+            LOG.info("Could not load document from xml file, new document created.");
+            boxDataDocument = XMLUtil.createEmptyDocument();
+        }
+
         Element root = XMLUtil.getRootElement(boxDataDocument);
         if (root == null) {
             root = boxDataDocument.createElement(ELEMENT_BOXES);
             boxDataDocument.appendChild(root);
         }
+
         for (Element boxElement : XMLUtil.getElements(root.getChildNodes())) {
             if ("0".equals(boxElement.getAttribute(ATTRIBUTE_ID))) {
                 for (Flashcard flashcard : flashcards) {
@@ -212,7 +334,15 @@ public class XMLWriter extends XMLService {
         element.setAttribute(ATTRIBUTE_ID, String.valueOf(flashcard.getId()));
         element.setAttribute(ATTRIBUTE_ANSWERED, String.valueOf(flashcard.getTotalAnswers()));
         element.setAttribute(ATTRIBUTE_ANSWERED_CORRECTLY, String.valueOf(flashcard.getCorrectAnswers()));
-        element.setAttribute(ATTRIBUTE_LAST_ANSWERED, String.valueOf(flashcard.getLastAnsweredDate()));
+        if (flashcard.getCategoryLastAnswered() != null) {
+            element.setAttribute(ATTRIBUTE_CATEGORY_LAST_ANSWERED, String.valueOf(flashcard.getCategoryLastAnswered()));
+        }
+        if (flashcard.getCategoryLastAnsweredCorrectly() != null) {
+            element.setAttribute(ATTRIBUTE_CATEGORY_LAST_ANSWERED_CORRECTLY, String.valueOf(flashcard.getCategoryLastAnsweredCorrectly()));
+        }
+        if (flashcard.getBoxLastAnswered() != null) {
+            element.setAttribute(ATTRIBUTE_BOX_LAST_ANSWERED, String.valueOf(flashcard.getBoxLastAnswered()));
+        }
     }
     
     public static void updateDailyActivity(DailyActivity dailyActivity, Profile profile) {

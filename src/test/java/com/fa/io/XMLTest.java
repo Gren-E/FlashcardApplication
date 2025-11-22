@@ -39,7 +39,7 @@ public class XMLTest extends AbstractTest {
 
         flashcard.answer(true, AppMode.CATEGORY_BROWSER);
         XMLWriter.updateFlashcardStats(flashcard, DataManager.getProfile(1));
-        Assertions.assertTrue(flashcard.wasAnsweredToday());
+        Assertions.assertTrue(flashcard.wasAnsweredInCategoryToday());
     }
 
     @Test
@@ -56,15 +56,15 @@ public class XMLTest extends AbstractTest {
     public void getBoxesFromXmlTest() {
         Box[] boxes = XMLReader.loadBoxes(DataManager.getProfile(2));
         Assertions.assertEquals(3, boxes.length);
-        Assertions.assertEquals(0, boxes[0].getBoxId());
+        Assertions.assertEquals(0, boxes[0].getIndex());
         Assertions.assertEquals(0, boxes[0].getDuration());
         Assertions.assertEquals(3, boxes[0].size());
         Assertions.assertArrayEquals(new Integer[]{2, 4, 6}, boxes[0].getFlashcardsIds());
-        Assertions.assertEquals(1, boxes[1].getBoxId());
+        Assertions.assertEquals(1, boxes[1].getIndex());
         Assertions.assertEquals(1, boxes[1].getDuration());
         Assertions.assertEquals(2, boxes[1].size());
         Assertions.assertArrayEquals(new Integer[]{1, 3}, boxes[1].getFlashcardsIds());
-        Assertions.assertEquals(2, boxes[2].getBoxId());
+        Assertions.assertEquals(2, boxes[2].getIndex());
         Assertions.assertEquals(0, boxes[2].getDuration());
         Assertions.assertEquals(1, boxes[2].size());
         Assertions.assertArrayEquals(new Integer[]{0}, boxes[2].getFlashcardsIds());

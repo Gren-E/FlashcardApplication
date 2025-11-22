@@ -22,13 +22,13 @@ public class ProfileCreatorDialog extends CreatorDialog {
 
     public ProfileCreatorDialog(DialogUser dialogUser) {
         super(dialogUser);
-        setSize(300, 200);
+        setSize(300, 250);
         setLocationRelativeTo(dialogUser.getJComponent());
 
         profileNameField = ComponentFactory.createStandardJTextField();
         profileNameField.getDocument().addDocumentListener(new TextFieldListener(() -> acceptButton.setEnabled(isInputValid())));
 
-        parametersPanel.add(profileNameField, new GBC(0,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setInsets(0, 20, 10,20));
+        parametersPanel.add(profileNameField, new GBC(0,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setInsets(10, 20, 10,20));
 
         titleLabel.setText("Choose profile name.");
 
@@ -45,12 +45,17 @@ public class ProfileCreatorDialog extends CreatorDialog {
         if (isInputValid()) {
             Profile profile = new Profile(IDAllocator.getNextProfileID());
             profile.setName(profileNameField.getText());
-            XMLWriter.saveProfile(profile);
+            profile.setDailyGoal(20);
+            profile.setDailyRelearningGoal(3);
+
             try {
                 Files.createDirectory(Path.of(AppEnv.getDataDirectory() + "/Profile_" + profile.getId()));
             } catch (IOException e) {
-                LOG.error("Could not create a new profile directory.");
+                LOG.error("Could not create a new profile directory, profile not saved.");
+                return;
             }
+
+            XMLWriter.saveProfile(profile);
         }
     }
 

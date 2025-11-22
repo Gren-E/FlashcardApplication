@@ -48,8 +48,16 @@ public class Flashcard {
         flashcardStats.setCorrectAnswers(correctAnswers);
     }
 
-    public void setLastAnswered(LocalDate lastAnsweredDate) {
-        flashcardStats.setLastAnswered(lastAnsweredDate);
+    public void setCategoryLastAnswered(LocalDate date) {
+        flashcardStats.setCategoryLastAnswered(date);
+    }
+
+    public void setCategoryLastAnsweredCorrectly(LocalDate date) {
+        flashcardStats.setCategoryLastAnsweredCorrectly(date);
+    }
+
+    public void setBoxLastAnswered(LocalDate date) {
+        flashcardStats.setBoxLastAnswered(date);
     }
 
     public int getId() {
@@ -76,8 +84,16 @@ public class Flashcard {
         return flashcardStats.getCorrectAnswers();
     }
 
-    public LocalDate getLastAnsweredDate() {
-        return flashcardStats.getLastAnsweredDate();
+    public LocalDate getCategoryLastAnswered() {
+        return flashcardStats.getCategoryLastAnswered();
+    }
+
+    public LocalDate getCategoryLastAnsweredCorrectly() {
+        return flashcardStats.getCategoryLastAnsweredCorrectly();
+    }
+
+    public LocalDate getBoxLastAnswered() {
+        return flashcardStats.getBoxLastAnswered();
     }
 
     public double getSuccessRatio() {
@@ -85,31 +101,41 @@ public class Flashcard {
     }
 
     public void answer(boolean isCorrect, AppMode source) {
-        if (wasAnsweredToday()) {
+        if (wasAnsweredInCategoryToday() && AppMode.CATEGORY_BROWSER.equals(source)) {
             return;
         }
-        flashcardStats.updateStats(isCorrect);
-        DailyActivity activity = DataManager.getDailyActivity(flashcardStats.getLastAnsweredDate());
-        activity.updateStats(isCorrect);
+
+        flashcardStats.updateStats(isCorrect, source);
         if (source == AppMode.REVISION) {
+            DailyActivity activity = DataManager.getDailyActivity(getBoxLastAnswered());
+            activity.updateStats(isCorrect, source);
             activity.updateBoxStats(isCorrect);
+            XMLWriter.updateDailyActivity(activity, DataManager.getCurrentProfile());
         }
 
         XMLWriter.updateFlashcardStats(this, DataManager.getCurrentProfile());
-        XMLWriter.updateDailyActivity(activity, DataManager.getCurrentProfile());
     }
 
-    public boolean wasAnsweredToday() {
-        return flashcardStats.wasAnsweredToday();
+    public boolean wasAnsweredInCategoryToday() {
+        return flashcardStats.wasAnsweredInCategoryToday();
+    }
+
+    public boolean wasAnsweredCorrectlyToday() {
+        return flashcardStats.wasAnsweredCorrectlyToday();
+    }
+
+    public boolean wasAnsweredInBoxToday() {
+        return flashcardStats.wasAnsweredInBoxToday();
     }
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Flashcard flashcard)) {
-            return false;
+        if (other instanceof Flashcard flashcard) {
+            return id == flashcard.id && fileOrdinal == flashcard.fileOrdinal && Objects.equals(categoryName, flashcard.categoryName)
+                    && Objects.equals(sourceFile, flashcard.sourceFile);
         }
 
-        return id == flashcard.id && fileOrdinal == flashcard.fileOrdinal && Objects.equals(categoryName, flashcard.categoryName) && Objects.equals(sourceFile, flashcard.sourceFile);
+        return false;
     }
 
     @Override

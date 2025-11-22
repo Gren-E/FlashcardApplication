@@ -23,6 +23,7 @@ public class DataManager {
 
     public static void setCurrentProfile(Profile profile) {
         currentProfile = profile;
+        reloadCurrentProfile();
         BoxManager.reload();
     }
 
@@ -43,18 +44,21 @@ public class DataManager {
         if (allProfiles == null) {
             getAllProfiles();
         }
+
         return allProfiles.get(id);
     }
 
     public static synchronized void reloadCurrentProfile() {
         loadCategories();
         loadFlashcards();
+        dailyActivities.clear();
     }
 
     public static synchronized String[] getAllCategoriesNames() {
         if (allCategories == null) {
             loadCategories();
         }
+
         return allCategories.toArray(new String[0]);
     }
 
@@ -62,6 +66,7 @@ public class DataManager {
         if (allFlashcards == null) {
             loadFlashcards();
         }
+
         return allFlashcards.values().toArray(new Flashcard[0]);
     }
 
@@ -69,6 +74,7 @@ public class DataManager {
         if (allFlashcards == null) {
             loadFlashcards();
         }
+
         return allFlashcards.get(id);
     }
 
@@ -97,6 +103,22 @@ public class DataManager {
         DailyActivity result = XMLReader.loadDailyActivity(date, currentProfile);
         dailyActivities.put(date, result);
         return result;
+    }
+
+    public static int getDailyActivityStreak() {
+         LocalDate date = LocalDate.now();
+         DailyActivity dailyActivity = getDailyActivity(date);
+         int streak = dailyActivity.isDailyGoalAchieved() ? 1 : 0;
+
+         date = date.minusDays(1);
+         dailyActivity = getDailyActivity(date);
+         while (dailyActivity.isDailyGoalAchieved()) {
+             streak++;
+             date = date.minusDays(1);
+             dailyActivity = getDailyActivity(date);
+         }
+
+         return streak;
     }
 
 }

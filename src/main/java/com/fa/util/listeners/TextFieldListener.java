@@ -5,7 +5,7 @@ import javax.swing.event.DocumentListener;
 
 public class TextFieldListener implements DocumentListener {
 
-        Runnable action;
+        private final Runnable action;
 
         public TextFieldListener(Runnable action) {
             this.action = action;

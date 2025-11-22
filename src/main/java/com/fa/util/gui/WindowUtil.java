@@ -11,8 +11,7 @@ public class WindowUtil {
 
     public static File selectFile(Component parent, String... extensions) {
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                null, extensions);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(null, extensions);
         chooser.setFileFilter(filter);
         chooser.setCurrentDirectory(AppEnv.getDataDirectory());
 

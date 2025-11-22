@@ -1,42 +1,99 @@
 package com.fa.gui.panels;
 
+import com.fa.AppEnv;
 import com.fa.data.BoxManager;
+import com.fa.gui.AppColorPalette;
 import com.fa.gui.ComponentFactory;
 import com.fa.io.DataManager;
-import com.fa.util.gui.GBC;
+import com.fa.util.gui.ComponentUtil;
+import com.fa.util.gui.ImageUtil;
+import com.fa.util.gui.components.EmbellishedStringIcon;
+import com.fa.util.gui.components.ProgressChart;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.GridBagLayout;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.io.File;
 import java.time.LocalDate;
 
 public class ProfileStatsPanel extends JPanel {
 
-    private final JLabel flashcardsLearntLabel;
-    private final JLabel dailyGoalLabel;
+    private final EmbellishedStringIcon dailyGoalStreak;
+
+    private final ProgressChart flashcardsLearntChart;
+    private final ProgressChart dailyGoalChart;
 
     public ProfileStatsPanel() {
         setOpaque(false);
+        setMaximumSize(new Dimension(getWidth(), 100));
+        setPreferredSize(new Dimension(getWidth(), 100));
 
-        flashcardsLearntLabel = ComponentFactory.createTitleJLabel();
-        dailyGoalLabel = ComponentFactory.createTitleJLabel();
+        JLabel dailyGoalStreakLabel = ComponentFactory.createTitleJLabel("Daily Goal Streak:");
+        JLabel flashcardsLearntLabel = ComponentFactory.createTitleJLabel("Learnt:");
+        JLabel dailyGoalLabel = ComponentFactory.createTitleJLabel("Daily Goal:");
 
-        setLayout(new GridBagLayout());
-        add(flashcardsLearntLabel, new GBC(0,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setAnchor(GBC.CENTER).setInsets(5,50,5,10));
-        add(dailyGoalLabel, new GBC(1,0).setWeight(1,1).setFill(GBC.HORIZONTAL).setAnchor(GBC.CENTER).setInsets(5,10,5,50));
+        Image streakIcon = ImageUtil.readImage(new File(AppEnv.getImageDirectory(), "embellishment.png"));
+
+        dailyGoalStreak = ComponentFactory.createEmbellishedStringIcon(streakIcon, 145, 160);
+        dailyGoalStreak.setForeground(AppColorPalette.getAchievementColor());
+
+        JPanel streakPanel = ComponentUtil.createEmptyPanel(new BorderLayout());
+        streakPanel.add(dailyGoalStreakLabel, BorderLayout.NORTH);
+        streakPanel.add(dailyGoalStreak, BorderLayout.CENTER);
+
+        dailyGoalChart = ComponentFactory.createStandardProgressChart();
+        dailyGoalChart.setDiameter(160);
+        dailyGoalChart.setProgressColor(AppColorPalette.getAchievementColor());
+
+        JPanel dailyGoalPanel = ComponentUtil.createEmptyPanel(new BorderLayout());
+        dailyGoalPanel.add(dailyGoalLabel, BorderLayout.NORTH);
+        dailyGoalPanel.add(dailyGoalChart, BorderLayout.CENTER);
+
+        flashcardsLearntChart = ComponentFactory.createStandardProgressChart();
+        flashcardsLearntChart.setDiameter(160);
+        flashcardsLearntChart.setProgressColor(AppColorPalette.getProgressColor());
+
+        JPanel flashcardsLearntPanel = ComponentUtil.createEmptyPanel(new BorderLayout());
+        flashcardsLearntPanel.add(flashcardsLearntLabel, BorderLayout.NORTH);
+        flashcardsLearntPanel.add(flashcardsLearntChart, BorderLayout.CENTER);
+
+        setBorder(new EmptyBorder(20,20,20,20));
+        setLayout(new GridLayout(1,3));
+        add(flashcardsLearntPanel);
+        add(streakPanel);
+        add(dailyGoalPanel);
     }
 
     public void reloadStats() {
-        reloadFlashcardsLearntLabel();
-        reloadDailyGoalLabel();
+        reloadFlashcardsLearntChart();
+        reloadDailyGoalChart();
+        reloadStreakLabel();
     }
 
-    private void reloadFlashcardsLearntLabel() {
-        flashcardsLearntLabel.setText(String.format("Learnt: %d/%d", BoxManager.getLearntBox().size(), DataManager.getAllFlashcards().length));
+    private void reloadFlashcardsLearntChart() {
+        if (DataManager.getCurrentProfile() != null) {
+            flashcardsLearntChart.setMaxValue(DataManager.getAllFlashcards().length);
+        }
+
+        flashcardsLearntChart.setCurrentValue(BoxManager.getLearntBox().size());
     }
 
-    private void reloadDailyGoalLabel() {
-        dailyGoalLabel.setText(String.format("Daily Goal: %d/%d", DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers(), DataManager.getCurrentProfile().getDailyGoal()));
+    private void reloadDailyGoalChart() {
+        if (DataManager.getCurrentProfile() != null) {
+            dailyGoalChart.setMaxValue(DataManager.getCurrentProfile().getDailyGoal());
+        }
+
+        dailyGoalChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxCorrectAnswers());
+    }
+
+    private void reloadStreakLabel() {
+        if (DataManager.getCurrentProfile() != null) {
+            dailyGoalStreak.setText(String.valueOf(DataManager.getDailyActivityStreak()));
+        }
     }
 
 }

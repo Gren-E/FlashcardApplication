@@ -2,8 +2,9 @@ package com.fa.gui.panels;
 
 import com.fa.gui.AppWindow;
 import com.fa.gui.ComponentFactory;
+import com.fa.gui.dialogs.BoxesCreatorDialog;
 import com.fa.gui.dialogs.CategoryCreatorDialog;
-import com.fa.gui.dialogs.StatsCreatorDialog;
+import com.fa.gui.dialogs.RevisionPreferencesCreatorDialog;
 import com.fa.gui.dialogs.DialogMode;
 import com.fa.gui.dialogs.DialogUser;
 import com.fa.gui.dialogs.ExamCreatorDialog;
@@ -23,6 +24,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
     private final RoundRectButton revisionButton;
     private final RoundRectButton examButton;
     private final RoundRectButton changeDailyGoalButton;
+    private final RoundRectButton configureBoxes;
     private final RoundRectButton returnToProfileChoiceButton;
 
     private final CategoryListChoicePanel categoryListPanel;
@@ -33,10 +35,10 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
     public ProfileMenuPanel(AppWindow parent) {
         setOpaque(false);
 
-        JPanel browseCategoriesPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
+        JPanel browseCategoriesPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), true);
 
         profileStatsPanel = new ProfileStatsPanel();
-        JPanel statsPanel = ComponentFactory.createContentRoundRecJPanel(new BorderLayout());
+        JPanel statsPanel = ComponentFactory.createContentRoundRecJPanel(new BorderLayout(), true);
         statsPanel.add(profileStatsPanel, BorderLayout.CENTER);
 
         JLabel browserLabel = ComponentFactory.createTitleJLabel("Browse categories");
@@ -53,7 +55,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
         browseCategoriesPanel.add(categoryListPanel, new GBC(0,1));
         browseCategoriesPanel.add(newCategoryButton, new GBC(0,2).setInsets(10));
 
-        JPanel revisionPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
+        JPanel revisionPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), true);
 
         JLabel revisionLabel = ComponentFactory.createTitleJLabel("Revise");
         revisionButton = ComponentFactory.createStandardAppButton("Start revision!",event -> {
@@ -64,7 +66,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
         revisionPanel.add(revisionLabel, new GBC(0,0).setInsets(20));
         revisionPanel.add(revisionButton, new GBC(0,1));
 
-        JPanel examPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
+        JPanel examPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), true);
 
         JLabel examLabel = ComponentFactory.createTitleJLabel("Exam");
         examButton = ComponentFactory.createStandardAppButton("Start the exam!",event -> {
@@ -76,18 +78,20 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
         examPanel.add(examLabel, new GBC(0,0).setInsets(20));
         examPanel.add(examButton, new GBC(0,1));
 
-        changeDailyGoalButton = ComponentFactory.createStandardAppButton("Change Daily Goal",event -> new StatsCreatorDialog(this));
+        changeDailyGoalButton = ComponentFactory.createStandardAppButton("Revision Preferences",event -> new RevisionPreferencesCreatorDialog(this));
+        configureBoxes = ComponentFactory.createStandardAppButton("Configure Boxes", event -> new BoxesCreatorDialog(this));
 
         returnToProfileChoiceButton = ComponentFactory.createStandardAppButton("Change Profile",
                 event -> parent.getCardLayout().show(parent.getContentPanel(), AppWindow.PROFILE_CHOICE_PANEL));
 
         setLayout(new GridBagLayout());
-        add(changeDailyGoalButton, new GBC(0,0).setAnchor(GBC.WEST).setInsets(10));
-        add(returnToProfileChoiceButton, new GBC(1,0).setAnchor(GBC.EAST).setInsets(10));
-        add(statsPanel, new GBC(0,1,2,1).setWeight(1,0.2).setFill(GBC.BOTH).setInsets(5,20,5,20));
-        add(browseCategoriesPanel, new GBC(0,2,1,2).setWeight(0.3,0.8).setFill(GBC.BOTH).setInsets(5,20,50,5));
-        add(revisionPanel, new GBC(1,2).setWeight(0.7,0.8).setFill(GBC.BOTH).setInsets(5,5,5,20));
-        add(examPanel, new GBC(1,3).setWeight(0.7,0.8).setFill(GBC.BOTH).setInsets(5, 5, 50, 20));
+        add(changeDailyGoalButton, new GBC(1,0).setWeight(0,0).setAnchor(GBC.WEST).setInsets(10,10,10,5));
+        add(configureBoxes, new GBC(2,0).setWeight(0,0).setAnchor(GBC.WEST).setInsets(10,5,10,10));
+        add(returnToProfileChoiceButton, new GBC(4,0).setWeight(0,0).setAnchor(GBC.EAST).setInsets(10));
+        add(browseCategoriesPanel, new GBC(0,0,1,3).setWeight(0.4,1).setFill(GBC.BOTH).setInsets(30,20,50,5));
+        add(statsPanel, new GBC(1,1,4,1).setWeight(0.6,0.2).setFill(GBC.BOTH).setInsets(5,5,5,20));
+        add(revisionPanel, new GBC(1,2,2,1).setWeight(0.2,0.7).setFill(GBC.BOTH).setInsets(5,5,50,5));
+        add(examPanel, new GBC(3,2,2,1).setWeight(0.4,0.7).setFill(GBC.BOTH).setInsets(5, 5, 50, 20));
     }
 
     public void reloadCategories() {
@@ -103,6 +107,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
         revisionButton.setEnabled(false);
         examButton.setEnabled(false);
         changeDailyGoalButton.setEnabled(false);
+        configureBoxes.setEnabled(false);
         returnToProfileChoiceButton.setEnabled(false);
         categoryListPanel.setEnabled(false);
     }
@@ -114,6 +119,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
         revisionButton.setEnabled(true);
         examButton.setEnabled(true);
         changeDailyGoalButton.setEnabled(true);
+        configureBoxes.setEnabled(true);
         returnToProfileChoiceButton.setEnabled(true);
         categoryListPanel.setEnabled(true);
     }
@@ -131,7 +137,7 @@ public class ProfileMenuPanel extends JPanel implements DialogUser {
             return;
         }
 
-        if (mode == DialogMode.STATS) {
+        if (mode == DialogMode.REVISION_PREFERENCES) {
             profileStatsPanel.reloadStats();
         }
     }

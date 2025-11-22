@@ -5,6 +5,7 @@ public enum DialogMode {
     CATEGORY,
     EXAM,
     PROFILE,
-    STATS
+    REVISION_PREFERENCES,
+    BOXES
 
 }

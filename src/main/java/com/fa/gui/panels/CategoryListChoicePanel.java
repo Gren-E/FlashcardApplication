@@ -3,6 +3,7 @@ package com.fa.gui.panels;
 import com.fa.gui.AppWindow;
 import com.fa.gui.ComponentFactory;
 import com.fa.io.DataManager;
+import com.fa.io.XMLWriter;
 import com.fa.util.gui.GBC;
 import com.fa.util.gui.components.RoundRectButton;
 
@@ -25,14 +26,21 @@ public class CategoryListChoicePanel extends ListChoicePanel<String> {
         });
         buttonList.add(browseCategoryButton);
 
-        JPanel categoryPanel = createElementLabelPanel(categoryName);
-        categoryPanel.add(browseCategoryButton, new GBC(1, 0).setInsets(5, 10, 5, 15));
+        JPanel categoryPanel = createElementLabelPanel(categoryName, categoryName);
+        categoryPanel.add(browseCategoryButton, new GBC(2, 0).setInsets(5, 10, 5, 15));
 
         return categoryPanel;
     }
 
     @Override
+    public void deleteElement(String category) {
+        XMLWriter.deleteCategory(category, DataManager.getCurrentProfile());
+        window.getProfileMenuPanel().reloadCategories();
+    }
+
+    @Override
     protected String[] loadElements() {
+        DataManager.reloadCurrentProfile();
         return DataManager.getAllCategoriesNames();
     }
 

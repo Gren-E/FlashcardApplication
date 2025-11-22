@@ -4,6 +4,7 @@ public class Profile {
 
     private final int id;
     private int dailyGoal;
+    private int dailyRelearningGoal;
 
     private String name;
 
@@ -19,6 +20,10 @@ public class Profile {
         this.dailyGoal = dailyGoal;
     }
 
+    public void setDailyRelearningGoal(int dailyRelearningGoal) {
+        this.dailyRelearningGoal = dailyRelearningGoal;
+    }
+
     public int getId() {
         return id;
     }
@@ -29,6 +34,10 @@ public class Profile {
 
     public int getDailyGoal() {
         return dailyGoal;
+    }
+
+    public int getDailyRelearningGoal() {
+        return dailyRelearningGoal;
     }
 
 }

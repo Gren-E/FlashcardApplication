@@ -8,12 +8,12 @@ import java.awt.RenderingHints;
 
 public class RectButton extends HighlightedButton {
 
-    public RectButton(String text) {
-        super(text);
-    }
-
     public RectButton() {
         super();
+    }
+
+    public RectButton(String text) {
+        super(text);
     }
 
     @Override

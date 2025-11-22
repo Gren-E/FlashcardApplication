@@ -33,7 +33,7 @@ public abstract class CreatorDialog extends AbstractDialog {
 
         cancelButton = ComponentFactory.createStandardAppButton("Cancel", event -> handleCancel());
 
-        buttonPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout());
+        buttonPanel = ComponentFactory.createContentRoundRecJPanel(new GridBagLayout(), false);
         buttonPanel.add(acceptButton, new GBC(0,0).setInsets(5,15,5,5));
         buttonPanel.add(cancelButton, new GBC(1,0).setInsets(5,5,5,15));
     }

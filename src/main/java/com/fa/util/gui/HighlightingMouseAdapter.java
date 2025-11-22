@@ -49,7 +49,7 @@ public class HighlightingMouseAdapter extends MouseAdapter {
             return;
         }
 
-        if(highlightBorders) {
+        if (highlightBorders) {
             originalBorder = component.getBorder();
             component.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.WHITE));
         }

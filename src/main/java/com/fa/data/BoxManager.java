@@ -5,9 +5,12 @@ import com.fa.io.DataManager;
 import com.fa.io.XMLReader;
 import com.fa.io.XMLWriter;
 
+import java.util.Arrays;
+
 public class BoxManager {
 
     private static Box[] boxes;
+    private static Box activeBox;
 
     public static void reload() {
         Profile profile = DataManager.getCurrentProfile();
@@ -15,23 +18,21 @@ public class BoxManager {
     }
 
     public static Box findBox(int flashcardId) {
-        for (Box box : boxes) {
-            if (box.containsFlashcard(flashcardId)) {
-                return box;
-            }
-        }
-
-        return null;
+        return Arrays.stream(boxes).filter(box -> box.containsFlashcard(flashcardId)).findFirst().orElse(null);
     }
 
     public static Flashcard getNextUnansweredFlashcard() {
         Flashcard result = null;
+        activeBox = null;
+
         for (int i = boxes.length - 2; i >= 0; i--) {
             result = boxes[i].getNextUnansweredFlashcard();
             if (result != null) {
+                activeBox = boxes[i];
                 return result;
             }
         }
+
         return result;
     }
 
@@ -67,6 +68,7 @@ public class BoxManager {
         if (originalBox == null) {
             throw new IllegalArgumentException("Could not locate flashcard in boxes.");
         }
+
         Flashcard flashcard = DataManager.getFlashcard(flashcardId);
         flashcard.answer(false, AppMode.REVISION);
 
@@ -74,12 +76,17 @@ public class BoxManager {
         XMLWriter.saveBoxData(DataManager.getCurrentProfile());
     }
 
+    public static void setBoxes(Box[] boxes) {
+        BoxManager.boxes = boxes;
+        activeBox = null;
+    }
+
     public static Box[] getBoxes() {
         return boxes;
     }
 
-    public static Box getBox(int index) {
-        return boxes[index];
+    public static Box getActiveBox() {
+        return activeBox;
     }
 
     public static Box getLearntBox() {
@@ -97,6 +104,19 @@ public class BoxManager {
             }
         }
         throw new IllegalArgumentException("Box: " + box + "does not exist in current profile.");
+    }
+
+    public static int getUnansweredFlashcardsCount() {
+        return Arrays.stream(boxes).map(Box::getUnansweredFlashcardsCount).reduce(0, Integer::sum);
+    }
+
+    public static Flashcard getRandomLearntFlashcard() {
+        Flashcard result = getLearntBox().getRandomFlashcard();
+        if (result != null) {
+            activeBox = getLearntBox();
+        }
+
+        return result;
     }
 
 }

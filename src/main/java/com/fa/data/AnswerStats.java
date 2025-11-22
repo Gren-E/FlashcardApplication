@@ -29,7 +29,7 @@ public class AnswerStats {
         return (double) correctAnswers / totalAnswers;
     }
 
-    public void updateStats(boolean isCorrect) {
+    public void updateStats(boolean isCorrect, AppMode mode) {
         correctAnswers += (isCorrect) ? 1 : 0;
         totalAnswers++;
     }
