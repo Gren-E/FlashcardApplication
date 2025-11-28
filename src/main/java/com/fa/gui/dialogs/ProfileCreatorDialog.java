@@ -48,13 +48,6 @@ public class ProfileCreatorDialog extends CreatorDialog {
             profile.setDailyGoal(20);
             profile.setDailyRelearningGoal(3);
 
-            try {
-                Files.createDirectory(Path.of(AppEnv.getDataDirectory() + "/Profile_" + profile.getId()));
-            } catch (IOException e) {
-                LOG.error("Could not create a new profile directory, profile not saved.");
-                return;
-            }
-
             XMLWriter.saveProfile(profile);
         }
     }

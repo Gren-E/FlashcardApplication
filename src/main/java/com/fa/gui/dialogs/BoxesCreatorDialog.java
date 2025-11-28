@@ -82,8 +82,9 @@ public class BoxesCreatorDialog extends CreatorDialog {
 
         JLabel flashcardsLabel = ComponentFactory.createStandardJLabel(String.format("(%d)", boxes[index].size()));
 
-        JLabel addBoxLabel = ComponentFactory.createStandardInteractiveJLabel("+", () -> addBox(index));
+        JLabel addBoxLabel = ComponentFactory.createStandardInteractiveJLabel("✚", () -> addBox(index));
         JLabel deleteBoxLabel = ComponentFactory.createStandardInteractiveJLabel("✘", () -> removeBox(index));
+        addBoxLabel.setFont(AppFonts.getSymbolFont());
         deleteBoxLabel.setFont(AppFonts.getSymbolFont());
 
         JTextField boxDurationField = ComponentFactory.createStandardJTextField(String.valueOf(boxes[index].getDuration()));

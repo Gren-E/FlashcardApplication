@@ -35,4 +35,24 @@ public class BoxTest extends AbstractTest {
         }
     }
 
+    @Test
+    public void boxManagerTest() {
+        Box box0 = new Box(0);
+        Box box1 = new Box(1);
+        Box box2 = new Box(2);
+        Flashcard flashcard = DataManager.getFlashcard(5);
+        box2.addLastFlashcard(flashcard);
+        BoxManager.setBoxes(new Box[] {box0, box1, box2});
+
+        Assertions.assertEquals(box0, BoxManager.getReserveBox());
+        Assertions.assertEquals(box1, BoxManager.getBoxes()[1]);
+        Assertions.assertEquals(box2, BoxManager.getLearntBox());
+        Assertions.assertEquals(flashcard, BoxManager.getRandomLearntFlashcard());
+
+        Assertions.assertEquals(0, BoxManager.getBoxes()[1].size());
+        BoxManager.handleFailedAnswer(5);
+        Assertions.assertEquals(0, BoxManager.getLearntBox().size());
+        Assertions.assertEquals(1, BoxManager.getBoxes()[1].size());
+    }
+
 }

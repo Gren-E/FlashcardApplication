@@ -87,7 +87,7 @@ public class ProfileStatsPanel extends JPanel {
             dailyGoalChart.setMaxValue(DataManager.getCurrentProfile().getDailyGoal());
         }
 
-        dailyGoalChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxCorrectAnswers());
+        dailyGoalChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers());
     }
 
     private void reloadStreakLabel() {

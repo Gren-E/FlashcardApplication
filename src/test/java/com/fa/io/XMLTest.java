@@ -1,17 +1,23 @@
 package com.fa.io;
 
 import com.fa.AbstractTest;
+import com.fa.AppEnv;
 import com.fa.data.AppMode;
 import com.fa.data.Box;
 import com.fa.data.BoxManager;
+import com.fa.data.IDAllocator;
+import com.fa.data.Profile;
 import com.fa.data.fc.Flashcard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class XMLTest extends AbstractTest {
@@ -95,4 +101,39 @@ public class XMLTest extends AbstractTest {
         }
     }
 
+    @Test
+    @Order(6)
+    public void addAndDeleteProfileTest() {
+        int id = IDAllocator.getNextProfileID();
+        Profile profile = new Profile(id);
+        XMLWriter.saveProfile(profile);
+
+        File createdDirectory = new File(AppEnv.getDataDirectory(), "Profile_" + id);
+        Assertions.assertTrue(createdDirectory.exists());
+        XMLWriter.deleteProfile(profile);
+        Assertions.assertNull(DataManager.getProfile(id));
+        Assertions.assertFalse(createdDirectory.exists());
+    }
+
+    @Test
+    @Order(7)
+    public void addAndDeleteCategoryTest() {
+        Profile profile = DataManager.getProfile(1);
+        List<Flashcard> flashcards = new ArrayList<>();
+        flashcards.add(new Flashcard());
+        flashcards.add(new Flashcard());
+        flashcards.forEach(flashcard -> {
+            flashcard.setId(IDAllocator.getNextFlashcardId(profile));
+            flashcard.setCategoryName("TestTemp");
+            flashcard.setSourceFile(new File("C:\\Users\\greew\\Desktop\\JavaCert_FC_02_Operators.pdf"));
+        });
+
+        XMLWriter.saveFlashcardsData(flashcards.toArray(new Flashcard[0]), profile);
+        DataManager.setCurrentProfile(profile);
+        Assertions.assertArrayEquals(flashcards.toArray(), DataManager.getAllFlashcardsFromCategory("TestTemp"));
+
+        XMLWriter.deleteCategory("TestTemp", profile);
+        DataManager.reloadCurrentProfile();
+        Assertions.assertEquals(0, DataManager.getAllFlashcardsFromCategory("TestTemp").length);
+    }
 }

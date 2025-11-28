@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 public class Box {
 
@@ -30,6 +29,10 @@ public class Box {
 
     public void addLastFlashcard(Flashcard flashcard) {
         flashcardsIds.addLast(flashcard.getId());
+    }
+
+    public void shuffle() {
+        Collections.shuffle(flashcardsIds);
     }
 
     public Integer[] getFlashcardsIds() {

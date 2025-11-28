@@ -65,7 +65,7 @@ public class BoxesRevisionPanel extends LearningModesPanel implements DialogUser
         Box[] boxes = BoxManager.getBoxes();
         int totalAnswers = DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers();
         dailyProgressChart.setMaxValue(BoxManager.getUnansweredFlashcardsCount() - BoxManager.getReserveBox().getUnansweredFlashcardsCount() + totalAnswers);
-        dailyProgressChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxCorrectAnswers());
+        dailyProgressChart.setCurrentValue(totalAnswers);
 
         boxesInfoPanel.removeAll();
         boxesInfoPanel.add(dailyProgressChart, new GBC(0,0 ,3, 1).setWeight(1,0.5).setFill(GBC.BOTH).setInsets(100,0,50,0));
@@ -116,6 +116,9 @@ public class BoxesRevisionPanel extends LearningModesPanel implements DialogUser
     }
 
     private void startRevision() {
+        Box reserve = BoxManager.getReserveBox();
+        reserve.shuffle();
+
         flashcardDisplayPanel.setFlashcard(getNextFlashcard());
         int learntRefresher = DataManager.getCurrentProfile().getDailyRelearningGoal();
         int totalAnswers = DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers();
@@ -132,21 +135,23 @@ public class BoxesRevisionPanel extends LearningModesPanel implements DialogUser
         if (DataManager.getCurrentProfile() != null) {
             dailyGoalChart.setMaxValue(DataManager.getCurrentProfile().getDailyGoal());
         }
-        dailyGoalChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxCorrectAnswers());
+        dailyGoalChart.setCurrentValue(DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers());
     }
 
     private Flashcard getNextFlashcard() {
         Flashcard result;
         int learntRefresher = DataManager.getCurrentProfile().getDailyRelearningGoal();
         int boxTotalAnswers = DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers();
+        if (DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers() == learntRefresher && BoxManager.getActiveBox().equals(BoxManager.getLearntBox())) {
+            new RevisionMessageDialog(this, RevisionMessageDialog.BOXES);
+        }
+
         if (boxTotalAnswers < learntRefresher && boxTotalAnswers < BoxManager.getLearntBox().size()) {
             result = BoxManager.getRandomLearntFlashcard();
         } else {
             result = BoxManager.getNextUnansweredFlashcard();
         }
-        if (DataManager.getDailyActivity(LocalDate.now()).getBoxTotalAnswers() == learntRefresher) {
-            new RevisionMessageDialog(this, RevisionMessageDialog.BOXES);
-        }
+
         return result;
     }
 

@@ -17,6 +17,8 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -58,6 +60,13 @@ public class XMLWriter extends XMLService {
         profileElement.setAttribute(ATTRIBUTE_DAILY_RELEARNING_GOAL, String.valueOf(profile.getDailyRelearningGoal()));
 
         XMLUtil.saveDocument(profileFileDocument, profileFile, XMLUtil.DEFAULT_INDENT);
+
+        try {
+            Files.createDirectory(Path.of(AppEnv.getDataDirectory() + "/Profile_" + profile.getId()));
+        } catch (IOException e) {
+            LOG.error("Could not create a new profile directory, profile not saved.");
+            return;
+        }
 
         File boxDataFile = AppEnv.getBoxesFile(profile);
         Document boxDataDocument = XMLUtil.loadDocumentFromFile(boxDataFile);
